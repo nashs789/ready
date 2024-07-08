@@ -1,5 +1,7 @@
 package com.example.ready.Service;
 
+import com.example.ready.entity.Book;
+import com.example.ready.enums.BookCategory;
 import com.example.ready.enums.Stars;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
@@ -9,8 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +22,7 @@ public class BooksService {
 
     public final ChromeDriver chromeDriver;
 
-    public void getBooks() {
+    public void insertBooks() {
         chromeDriver.get("https://books.toscrape.com/");
         waiting();
 
@@ -32,7 +35,7 @@ public class BooksService {
                                                    .map(e -> e.getAttribute("href"))
                                                    .collect(Collectors.toList());
 
-        List<String> allBooksDetailUrls = new ArrayList<>();
+        Map<BookCategory, List<String>> allBooksDetailUrls = new HashMap<>();
 
         for(String url : categoryUrls) {
             chromeDriver.get(url);  // 페이지 이동
@@ -40,6 +43,7 @@ public class BooksService {
 
             String currentCategory = chromeDriver.findElement(By.className("page-header"))
                                                  .getText();
+            allBooksDetailUrls.put(BookCategory.getBookCategoryEnum(currentCategory), new ArrayList<>());
 
             if(currentCategory.startsWith("Sequential Art")) {  // 4번째 카테고리 종료 하드코딩
                 break;
@@ -51,7 +55,8 @@ public class BooksService {
             for(WebElement detailUrl : detailUrls) {
                 String bookDetailUrl = detailUrl.findElement(By.tagName("a")).getAttribute("href");
 
-                allBooksDetailUrls.add(bookDetailUrl);
+                allBooksDetailUrls.get(BookCategory.getBookCategoryEnum(currentCategory))
+                                  .add(bookDetailUrl);
             }
 
             // 다음 페이지가 존재 하면 탐색 url 에 추가
@@ -66,30 +71,35 @@ public class BooksService {
         }
 
         // 책 상세정보 데이터 수집
-        for(String url : allBooksDetailUrls) {
-            chromeDriver.get(url);  // 페이지 이동
-            waiting();  // 페이지 렌더링 대기
+        for(BookCategory bookCategory : allBooksDetailUrls.keySet()) {
+            for(String url: allBooksDetailUrls.get(bookCategory)) {
+                chromeDriver.get(url);  // 페이지 이동
+                waiting();  // 페이지 렌더링 대기
 
-            WebElement product_main = chromeDriver.findElement(By.className("product_main"));
+                WebElement product_main = chromeDriver.findElement(By.className("product_main"));
 
-            String title = product_main.findElement(By.cssSelector("h1")).getText();
-            Stars stars = Stars.getStars(product_main.findElement(By.className("star-rating")).getAttribute("class").split(" ")[1]);
-            List<WebElement> tds = chromeDriver.findElement(By.cssSelector("table")).findElements(By.cssSelector("td"));
+                String title = product_main.findElement(By.cssSelector("h1")).getText();
+                Stars stars = Stars.getStars(product_main.findElement(By.className("star-rating")).getAttribute("class").split(" ")[1]);
+                List<WebElement> tds = chromeDriver.findElement(By.cssSelector("table")).findElements(By.cssSelector("td"));
 
-            String upc = tds.get(0).getText();
-            String type = tds.get(1).getText();
-            String price = tds.get(2).getText();
-            String priceWithTax = tds.get(3).getText();
-            String tax = tds.get(4).getText();
-            String availability = tds.get(5).getText();
-            String reviews = tds.get(6).getText();
+                String upc = tds.get(0).getText();
+                String price = tds.get(2).getText();
+                String tax = tds.get(4).getText();
+                String reviews = tds.get(6).getText();
 
-            System.out.println("==============================");
-            System.out.println("title = " + title);
-            System.out.println("stars = " + stars);
-            System.out.println("upc = " + upc);
-            System.out.println("type = " + type);
-            System.out.println("price = " + price);
+                Book book = Book.builder()
+                                .title(title)
+                                .stars(stars)
+                                .category(bookCategory)
+                                .upc(upc)
+                                .price(price)
+                                .tax(tax)
+                                .available(true)
+                                .reviews(reviews)
+                                .build();
+
+                System.out.println(book);
+            }
         }
     }
 
