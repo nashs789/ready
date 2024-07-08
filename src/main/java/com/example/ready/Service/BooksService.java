@@ -3,7 +3,6 @@ package com.example.ready.Service;
 import com.example.ready.entity.Book;
 import com.example.ready.enums.BookCategory;
 import com.example.ready.enums.Stars;
-import com.example.ready.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 public class BooksService {
 
     public final ChromeDriver chromeDriver;
-    public final BookRepository bookRepository;
 
     public void insertBooks() {
         chromeDriver.get("https://books.toscrape.com/");
@@ -100,7 +98,7 @@ public class BooksService {
                                 .reviews(reviews)
                                 .build();
 
-                bookRepository.save(book);
+                System.out.println(book);
             }
         }
     }
