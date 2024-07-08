@@ -32,6 +32,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.20.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
 }
 
 tasks.named('test') {
