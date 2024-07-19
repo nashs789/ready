@@ -3,7 +3,6 @@ package com.example.ready.controller;
 import com.example.ready.Service.ExcelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,5 +18,10 @@ public class ExcelController {
     @PostMapping("")
     public void downloadBasicExcelFile() throws IOException {
         excelService.downloadBasicExcelFile();
+    }
+
+    @PostMapping("/downloadAllBooks")
+    public void downloadAllBooksExcelFile() throws IOException {
+        excelService.downloadAllBooksExcelFile();
     }
 }

@@ -7,7 +7,7 @@ public enum BookCategory{
     TRAVEL("Travel"),
     MYSTERY("Mystery"),
     HISTORICAL_FICTION("Historical Fiction"),
-    SEQUENTIAL_ART("Sequential Art"),
+/*    SEQUENTIAL_ART("Sequential Art"),
     CLASSICS("Classics"),
     PHILOSOPHY("Philosophy"),
     ROMANCE("Romance"),
@@ -54,7 +54,7 @@ public enum BookCategory{
     CULTURAL("Cultural"),
     EROTICA("Erotica"),
     CRIME("Crime"),
-    UNKNOWN("Define This Category Plz");
+    UNKNOWN("Define This Category Plz")*/;
 
     private String categoryName;
     private static final Map<String, BookCategory> BOOK_CATEGORY_MAP = new HashMap<>();
@@ -74,6 +74,6 @@ public enum BookCategory{
     }
 
     public static BookCategory getBookCategoryEnum(String category) {
-        return BOOK_CATEGORY_MAP.getOrDefault(category, UNKNOWN);
+        return BOOK_CATEGORY_MAP.getOrDefault(category, TRAVEL);  // UNKNOWN
     }
 }
